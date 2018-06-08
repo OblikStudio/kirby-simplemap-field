@@ -23,40 +23,48 @@
 
             return mapsPromise = $.getScript(url);
         } else {
-            throw new Error('Simplemap: No map API key found!');
+            throw new Error('Simplemap: No Google Maps API key found!');
         }
     }
 
-    function MapField($field) {
+    function SimpleMap($field) {
         this.$field = $field;
         this.$inputLat = this.$field.find('.simplemap-lat');
         this.$inputLng = this.$field.find('.simplemap-lng');
         this.$inputZoom = this.$field.find('.simplemap-zoom');
         this.$mapCanvas = this.$field.find('.simplemap-canvas');
 
-        this.settings = {
-            zoom: parseInt(this.$inputZoom.val()) || 1,
-            center: {
-                lat: parseFloat(this.$inputLat.val()) || 0,
-                lng: parseFloat(this.$inputLng.val()) || 0
-            },
+        this.isDisabled = this.$mapCanvas.hasClass('is-disabled');
 
-            disableDefaultUI: true,
-            zoomControl: true,
-            fullscreenControl: true,
-            gestureHandling: 'cooperative'
-        };
+        this.settings = JSON.parse(
+            this.$mapCanvas.attr('data-map-settings')
+        );
+
+        this.markerSettings = this.$mapCanvas.attr('data-marker-settings');
+        if (this.markerSettings) {
+            try {
+                this.markerSettings = JSON.parse(this.markerSettings);
+            } catch (e) {
+                this.markerSettings = null;
+                console.warn('Couldn’t parse marker settings:', e);
+            }
+        }
 
         this.init();
-    } MapField.prototype = {
+    } SimpleMap.prototype = {
         init: function () {
             this.map = new google.maps.Map(this.$mapCanvas[0], this.settings);
-            this.pin = new google.maps.Marker({
-                position: new google.maps.LatLng(this.settings.center.lat, this.settings.center.lng),
-                map: this.map,
-                draggable: true
-            });
-            this.listen();
+            this.pin = new google.maps.Marker(
+                $.extend(this.markerSettings, {
+                    map: this.map,
+                    position: this.settings.center,
+                    draggable: !this.isDisabled
+                })
+            );
+
+            if (!this.isDisabled) {
+                this.listen();
+            }
         },
 
         listen: function () {
@@ -83,13 +91,15 @@
     };
 
     $.fn.kirbySimplemap = function () {
-        var $field = $(this);
+        return this.each(function (i, element) {
+            var $field = $(element);
 
-        whenGoogleMapsLoaded({
-            key: $field.attr('data-google-maps-key'),
-            language: $field.attr('data-google-maps-language')
-        }).then(function () {
-            new MapField($field);
+            whenGoogleMapsLoaded({
+                key: $field.attr('data-google-maps-key'),
+                language: $field.attr('data-google-maps-language')
+            }).then(function () {
+                new SimpleMap($field);
+            });
         });
     };
 })(jQuery);
