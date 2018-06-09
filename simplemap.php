@@ -8,7 +8,7 @@ class SimplemapField extends InputField {
         'js' => array('map.js')
     );
 
-    public function content() {
+    public function get_field_data() {
         if (!empty($this->map)) {
             $mapSettings = $this->map;
         } else {
@@ -30,21 +30,35 @@ class SimplemapField extends InputField {
             );
         }
 
+        $data = array(
+            'key'   => c::get('google.maps.key'),
+            'lang'  => panel()->translation()->code(),
+            'map'   => $mapSettings
+        );
+
+        if (!empty($this->marker)) {
+            $data['marker'] = $this->marker;
+        }
+
+        return $data;
+    }
+
+    public function content() {
+        $fieldData = $this->get_field_data();
+
         $field = new Brick('div');
         $field->addClass('field-content');
 
-        if (!c::get('google.maps.key')) {
+        if (empty($fieldData['key'])) {
             $field->append('Missing Google Maps API key config setting.');
             return $field;
         }
 
+        $field->data('simplemap', json_encode($fieldData, JSON_NUMERIC_CHECK));
         $field->data('field', 'kirbySimplemap'); // jQuery plugin, defined in assets/js/map.js
-        $field->data('google-maps-key', c::get('google.maps.key'));
-        $field->data('google-maps-language', panel()->translation()->code());
 
         $map = new Brick('div');
         $map->addClass('simplemap-canvas input');
-        $map->data('map-settings', json_encode($mapSettings, JSON_NUMERIC_CHECK));
 
         if ($this->readonly() || $this->disabled()) {
             $map->addClass('is-disabled');
@@ -59,14 +73,10 @@ class SimplemapField extends InputField {
             } 
         }
 
-        if (!empty($this->marker)) {
-            $map->data('marker-settings', json_encode($this->marker, JSON_NUMERIC_CHECK));
-        }
-
         $field->append($map);
-        $field->append($this->create_input('lat', $mapSettings['center']['lat']));
-        $field->append($this->create_input('lng', $mapSettings['center']['lng']));
-        $field->append($this->create_input('zoom', $mapSettings['zoom']));
+        $field->append($this->create_input('lat', $fieldData['map']['center']['lat']));
+        $field->append($this->create_input('lng', $fieldData['map']['center']['lng']));
+        $field->append($this->create_input('zoom', $fieldData['map']['zoom']));
 
         return $field;
     }

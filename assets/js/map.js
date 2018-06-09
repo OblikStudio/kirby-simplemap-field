@@ -17,17 +17,17 @@
         if (params.key) {
             url += '?key=' + params.key;
 
-            if (params.language) {
-                url += '&language=' + params.language;
+            if (params.lang) {
+                url += '&language=' + params.lang;
             }
 
             return mapsPromise = $.getScript(url);
         } else {
-            throw new Error('Simplemap: No Google Maps API key found!');
+            throw new Error('Simplemap: No Google Maps API key found');
         }
     }
 
-    function SimpleMap($field) {
+    function SimpleMap($field, data) {
         this.$field = $field;
         this.$inputLat = this.$field.find('.simplemap-lat');
         this.$inputLng = this.$field.find('.simplemap-lng');
@@ -35,29 +35,16 @@
         this.$mapCanvas = this.$field.find('.simplemap-canvas');
 
         this.isDisabled = this.$mapCanvas.hasClass('is-disabled');
-
-        this.settings = JSON.parse(
-            this.$mapCanvas.attr('data-map-settings')
-        );
-
-        this.markerSettings = this.$mapCanvas.attr('data-marker-settings');
-        if (this.markerSettings) {
-            try {
-                this.markerSettings = JSON.parse(this.markerSettings);
-            } catch (e) {
-                this.markerSettings = null;
-                console.warn('Couldn’t parse marker settings:', e);
-            }
-        }
+        this.data = data;
 
         this.init();
     } SimpleMap.prototype = {
         init: function () {
-            this.map = new google.maps.Map(this.$mapCanvas[0], this.settings);
+            this.map = new google.maps.Map(this.$mapCanvas[0], this.data.map);
             this.pin = new google.maps.Marker(
-                $.extend(this.markerSettings, {
+                $.extend(this.data.marker || {}, {
                     map: this.map,
-                    position: this.settings.center,
+                    position: this.data.map.center,
                     draggable: !this.isDisabled
                 })
             );
@@ -94,11 +81,17 @@
         return this.each(function (i, element) {
             var $field = $(element);
 
+            try {
+                var fieldData = JSON.parse($field.attr('data-simplemap'));
+            } catch (e) {
+                throw new Error('Simplemap: Failed to parse data');
+            }
+
             whenGoogleMapsLoaded({
-                key: $field.attr('data-google-maps-key'),
-                language: $field.attr('data-google-maps-language')
+                key: fieldData.key,
+                lang: fieldData.lang
             }).then(function () {
-                new SimpleMap($field);
+                new SimpleMap($field, fieldData);
             });
         });
     };
