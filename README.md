@@ -121,7 +121,7 @@ location:
 
 ---
 
-<span style="color: red">**Warning:**</span> Map and marker settings are passed to the Google Maps API as primitive values! Settings that expect a non-primitve value **will not work**. For example, if you try to specify a marker animation:
+**Warning:** Map and marker settings are passed to the Google Maps API as primitive values! Settings that expect a non-primitve value **will not work**. For example, if you try to specify a marker animation:
 
 ```yaml
 location:
