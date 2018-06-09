@@ -134,3 +134,25 @@ location:
 This will not work! The API will receive `"google.maps.Animation.DROP"` as a string. It won’t access the `google` object.
 
 **Conclusion:** Use the map and marker settings to change values that expect a string, number or boolean, like the ones up in the examples.
+
+## Comparing with other plugins
+
+### [kirby-map-field](https://github.com/AugustMiller/kirby-map-field) by [August Miller](https://github.com/AugustMiller)
+
+Simplemap is actually an overhaul of kirby-map-field. Despite it being a great plugin, it had some functionalities that didn’t align with my needs:
+
+- It uses the route `example.com/maps/key` to serve the Google Maps API key. This is a bit tricky to handle if you use URL rewriting, which I do. For that reason, Simplemap passes the API key as an attribute to the actual field in the panel. From there, JavaScript knows where to look and gets the key. No routes involved.
+
+- Has poor user experience (in my opinion). Whenever you zoom in/out, it pans to the current marker position. If I want to move the pin from New York to Moscow, I need to drag it all the way from one place to the other while the map is constantly being panned to the marker. Simplemap doesn’t pan the map at all. You can simply zoom out, navigate to the place you want and just click to place the marker. You can drag it, but you’re not _forced_ to do so.
+
+- Has locked map settings. For example, zooming in/out with your mousewheel is disabled. With Simplemap, you have all the control _and_ you can control the marker settings.
+
+- Doesn’t use the panel’s language to display the map.
+
+- Doesn’t work with readonly/disabled fields. On a multi-language site, you can change the location in any translation, which is unneeded.
+
+- It uses the deprecated Google JSAPI loader https://www.google.com/jsapi to load Google Maps.
+
+- Its address field can’t be hidden and if you don’t enable the Geolocation API, that field is obsolete.
+
+- Its latitude and longitude fields are clutter. If you’re the content manager, you probably don’t care about coordinates.
