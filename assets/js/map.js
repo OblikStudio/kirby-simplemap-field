@@ -37,7 +37,21 @@
         this.isDisabled = this.$mapCanvas.hasClass('is-disabled');
         this.data = data;
 
-        this.init();
+        if (this.data.style) {
+            var self = this;
+
+            $.get(this.data.style).always(function (data, status) {
+                if (status == 'success') {
+                    self.data.map.styles = data;
+                } else {
+                    console.warn('Simplemap: Failed to load map styles from:', self.data.style);
+                }
+
+                self.init();
+            });
+        } else {
+            this.init();
+        }
     } SimpleMap.prototype = {
         init: function () {
             this.map = new google.maps.Map(this.$mapCanvas[0], this.data.map);

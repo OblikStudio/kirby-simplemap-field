@@ -40,6 +40,14 @@ class SimplemapField extends InputField {
             $data['marker'] = $this->marker;
         }
 
+        if (!empty($this->style)) {
+            $styleJson = c::get('google.maps.styles.' . $this->style);
+
+            if ($styleJson) {
+                $data['style'] = $styleJson;
+            }
+        }
+
         return $data;
     }
 
