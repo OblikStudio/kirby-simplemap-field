@@ -9,8 +9,8 @@ class SimplemapField extends InputField {
     );
 
     public function content() {
-        if (!empty($this->settings)) {
-            $mapSettings = $this->settings;
+        if (!empty($this->map)) {
+            $mapSettings = $this->map;
         } else {
             $mapSettings = array(
                 'zoom' => 2,
@@ -50,8 +50,8 @@ class SimplemapField extends InputField {
             $map->addClass('is-disabled');
         }
 
-        if (!empty($this->size)) {
-            $ratioParts = explode(':', $this->size);
+        if (!empty($this->ratio)) {
+            $ratioParts = explode(':', $this->ratio);
 
             if (count($ratioParts) == 2 && $ratioParts[0] > 0) {
                 $paddingValue = ($ratioParts[1] / $ratioParts[0]) * 100;
