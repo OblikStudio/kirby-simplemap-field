@@ -6,6 +6,7 @@ Very quick, simple, easy, flexible and 100% working integration for Google Maps 
 - Readonly/disabled support: The map will be disabled when the field has `translate: false` and a non-primary language is selected, for example.
 - UI/UX settings: You can change the map UI (`zoomControl`, `fullscreenControl`...) and UX (`gestureHandling`) directly from your blueprint.
 - Marker settings: Like the map settings, you can also change the various marker functionality via blueprints.
+- Map styling: You can style the map however you wish with styles from [Snazzy Maps](https://snazzymaps.com/).
 - Variable width: Works perfectly with the default Kirby `width` blueprint property, as seen on the screenshots.
 - Height setting: You can set the height of the map as a ratio relative to its width, like `16:9`, `4:3`, `1:1`, any pair of numbers will do.
 - Smart script loading: In case some other plugin loaded Google Maps in the panel already, nothing will be loaded.
@@ -134,6 +135,47 @@ location:
 This will not work! The API will receive `"google.maps.Animation.DROP"` as a string. It won’t access the `google` object.
 
 **Conclusion:** Use the map and marker settings to change values that expect a string, number or boolean, like the ones up in the examples.
+
+### Map styles
+
+To add a custom style to your map, you need to have a JSON file with the style data inside. Let’s say we want to add [this style](https://snazzymaps.com/style/72543/assassins-creed-iv) to a map:
+
+1. Copy the JavaScript style array from Snazzy Maps
+
+2. Save the array in `assets/maps/style.json`
+
+3. Open `config/config.php` and register a new style by pointing to the file:
+
+   ```php
+   c::set('google.maps.styles.assassins', kirby()->urls()->assets() . '/maps/style.json');
+   ```
+
+4. In your blueprint, add the `style` property:
+
+   ```yaml
+   location:
+     label: Location
+     type: simplemap
+     style: assassins
+   ```
+
+5. The map is styled!
+
+   ![Simplemap with Snazzy Maps styles](https://i.imgur.com/4WnO3j3.png)
+
+---
+
+You can register any style by setting a configuration variable like that:
+
+```
+c::set('google.maps.styles.STYLE_NAME', 'STYLE_JSON_FILE_URL');
+```
+
+And then use it by specifying the name in the blueprint:
+
+```yaml
+style: STYLE_NAME
+```
 
 ## Comparing with other plugins
 
