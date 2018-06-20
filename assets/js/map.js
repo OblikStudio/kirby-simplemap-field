@@ -88,6 +88,7 @@
             this.$inputLat.val(position.lat());
             this.$inputLng.val(position.lng());
             this.pin.setPosition(position);
+            this.$field.closest('form').trigger('keep');
         }
     };
 
