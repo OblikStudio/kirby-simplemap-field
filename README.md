@@ -1,6 +1,10 @@
 # Simplemap Field
 Very quick, simple, easy, flexible and 100% working integration for Google Maps in the Kirby CMS Panel.
 
+## ⚠ Deprecated!
+
+This plugin only works in Kirby 2 and is discontinued. For Kirby 3, you can use [sylvainjule/kirby-locator](https://github.com/sylvainjule/kirby-locator).
+
 ## Features
 - Localization: The map language is set to the language of the panel, providing a consistent experience.
 - Readonly/disabled support: The map will be disabled when the field has `translate: false` and a non-primary language is selected, for example.
